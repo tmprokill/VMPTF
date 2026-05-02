@@ -1,0 +1,46 @@
+{% extends "articles/base.html" %}
+
+{% block title %}Список статей{% endblock %}
+
+{% block content %}
+<h1>Список статей</h1>
+
+<form class="filter-form" method="get" action="">
+  <select name="author" onchange="this.form.submit()">
+    <option value="">— Всі автори —</option>
+    {% for a in authors %}
+      <option value="{{ a }}" {% if author_filter == a %}selected{% endif %}>{{ a }}</option>
+    {% endfor %}
+  </select>
+  {% if author_filter %}
+    <a href="/" class="btn btn-secondary">&#10005; Скинути</a>
+  {% endif %}
+</form>
+
+{% if author_filter %}
+  <p style="color:#64748b; margin-bottom:1rem; font-size:.9rem;">
+    Автор: <span class="badge">{{ author_filter }}</span>
+    &nbsp;&mdash;&nbsp;{{ articles|length }} стат{% if articles|length == 1 %}тя{% elif articles|length < 5 %}ті{% else %}ей{% endif %}
+  </p>
+{% endif %}
+
+{% if articles %}
+  {% for article in articles %}
+    <div class="card">
+      <a href="/{{ article.pk }}/">{{ article.title }}</a>
+      <div class="meta">
+        <span>&#128100; <span class="badge">{{ article.author }}</span></span>
+        <span>&#128197; {{ article.published_at|date:"d.m.Y H:i" }}</span>
+      </div>
+      <p style="color:#94a3b8; font-size:.85rem; margin-top:.6rem; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">
+        {{ article.text|truncatechars:180 }}
+      </p>
+      <a class="api-link" href="/api/articles/{{ article.pk }}/" target="_blank">
+        &#123;&#125; JSON
+      </a>
+    </div>
+  {% endfor %}
+{% else %}
+  <div class="empty">Статей не знайдено.</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,109 @@
+# Лабораторна робота 1 — Django Articles
+
+Django-додаток для управління статтями з темним інтерфейсом та REST API.
+
+## Технології
+
+- Python 3.12
+- Django 6.0
+- Django REST Framework 3.17
+- SQLite
+
+## Структура проекту
+
+```
+lb1/
+├── manage.py
+├── db.sqlite3
+│
+├── config/                   # Налаштування проекту
+│   ├── settings.py
+│   ├── urls.py
+│   ├── asgi.py
+│   └── wsgi.py
+│
+└── articles/                 # Додаток статей
+    ├── models.py             # Модель Article
+    ├── views.py              # Веб-вигляди + API
+    ├── serializers.py        # DRF серіалізатор
+    ├── urls.py               # Маршрути
+    ├── admin.py              # Адмін-панель
+    ├── management/
+    │   └── commands/
+    │       └── seed_articles.py  # Команда наповнення БД
+    └── templates/
+        └── articles/
+            ├── base.html         # Базовий шаблон (темна тема)
+            ├── article_list.html # Список статей
+            └── article_detail.html # Окрема стаття
+```
+
+## Встановлення та запуск
+
+### 1. Активувати віртуальне середовище
+
+```powershell
+# Windows
+.\venv\Scripts\activate
+```
+
+### 2. Встановити залежності
+
+```powershell
+pip install django djangorestframework
+```
+
+### 3. Застосувати міграції
+
+```powershell
+python manage.py migrate
+```
+
+### 4. Наповнити базу даних тестовими даними
+
+```powershell
+# Додати статті (пропускає дублікати)
+python manage.py seed_articles
+
+# Очистити БД і заповнити заново
+python manage.py seed_articles --flush
+```
+
+### 5. Запустити сервер
+
+```powershell
+python manage.py runserver
+```
+
+Відкрити у браузері: http://127.0.0.1:8000/
+
+## Маршрути
+
+| URL | Опис |
+|-----|------|
+| `/` | Список статей з фільтром за автором |
+| `/<id>/` | Сторінка окремої статті |
+| `/admin/` | Адмін-панель Django |
+| `/api/articles/` | JSON API — список статей |
+| `/api/articles/<id>/` | JSON API — одна стаття |
+| `/api/articles/?author=Ім'я` | JSON API — фільтр за автором |
+
+## Модель Article
+
+| Поле | Тип | Опис |
+|------|-----|------|
+| `id` | AutoField | Первинний ключ |
+| `title` | CharField(200) | Заголовок |
+| `text` | TextField | Текст статті |
+| `published_at` | DateTimeField | Дата публікації |
+| `author` | CharField(100) | Автор |
+
+## Адмін-панель
+
+Створити суперкористувача:
+
+```powershell
+python manage.py createsuperuser
+```
+
+Відкрити: http://127.0.0.1:8000/admin/

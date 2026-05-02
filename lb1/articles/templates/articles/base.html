@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Статті{% endblock %}</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0f1117;
+      color: #e2e8f0;
+      min-height: 100vh;
+    }
+
+    nav {
+      background: #1a1d2e;
+      border-bottom: 1px solid #2d3148;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      height: 56px;
+    }
+    nav .brand {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #818cf8;
+      text-decoration: none;
+      letter-spacing: .02em;
+    }
+    nav a {
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: .9rem;
+      transition: color .2s;
+    }
+    nav a:hover { color: #e2e8f0; }
+
+    .container {
+      max-width: 900px;
+      margin: 2.5rem auto;
+      padding: 0 1.5rem;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #c7d2fe;
+      margin-bottom: 1.5rem;
+    }
+    h2 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #a5b4fc;
+      margin-bottom: .75rem;
+    }
+
+    .card {
+      background: #1a1d2e;
+      border: 1px solid #2d3148;
+      border-radius: 10px;
+      padding: 1.4rem 1.6rem;
+      margin-bottom: 1rem;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .card:hover {
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 1px #4f46e540;
+    }
+    .card a {
+      color: #a5b4fc;
+      text-decoration: none;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+    .card a:hover { color: #c7d2fe; text-decoration: underline; }
+
+    .meta {
+      font-size: .8rem;
+      color: #64748b;
+      margin-top: .35rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .meta span { display: flex; align-items: center; gap: .25rem; }
+
+    .badge {
+      display: inline-block;
+      background: #312e81;
+      color: #a5b4fc;
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: .75rem;
+      font-weight: 500;
+    }
+
+    .filter-form {
+      display: flex;
+      gap: .75rem;
+      margin-bottom: 1.75rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .filter-form input[type="text"],
+    .filter-form select {
+      background: #1a1d2e;
+      border: 1px solid #2d3148;
+      color: #e2e8f0;
+      padding: .45rem .75rem;
+      border-radius: 6px;
+      font-size: .9rem;
+      outline: none;
+      transition: border-color .2s;
+      min-width: 180px;
+    }
+    .filter-form input[type="text"]:focus,
+    .filter-form select:focus { border-color: #4f46e5; }
+
+    .btn {
+      display: inline-block;
+      padding: .45rem 1.1rem;
+      border-radius: 6px;
+      font-size: .88rem;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: background .2s, color .2s;
+    }
+    .btn-primary {
+      background: #4f46e5;
+      color: #fff;
+    }
+    .btn-primary:hover { background: #4338ca; }
+    .btn-secondary {
+      background: #1e2133;
+      color: #94a3b8;
+      border: 1px solid #2d3148;
+    }
+    .btn-secondary:hover { background: #2d3148; color: #e2e8f0; }
+
+    .article-body {
+      background: #1a1d2e;
+      border: 1px solid #2d3148;
+      border-radius: 10px;
+      padding: 2rem;
+    }
+    .article-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #c7d2fe;
+      margin-bottom: .75rem;
+    }
+    .article-text {
+      color: #cbd5e1;
+      line-height: 1.75;
+      margin-top: 1.5rem;
+      white-space: pre-wrap;
+    }
+
+    .api-link {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      font-size: .8rem;
+      color: #64748b;
+      text-decoration: none;
+      margin-top: .5rem;
+      transition: color .2s;
+    }
+    .api-link:hover { color: #818cf8; }
+
+    .empty {
+      text-align: center;
+      padding: 3rem;
+      color: #475569;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="brand">&#128240; Статті</a>
+    <a href="/">Всі статті</a>
+    <a href="/api/articles/" target="_blank">JSON API</a>
+  </nav>
+  <div class="container">
+    {% block content %}{% endblock %}
+  </div>
+</body>
+</html>

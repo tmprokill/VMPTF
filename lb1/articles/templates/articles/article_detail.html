@@ -1,0 +1,21 @@
+{% extends "articles/base.html" %}
+
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block content %}
+<div style="margin-bottom:1.25rem;">
+  <a href="/" class="btn btn-secondary">&#8592; Назад до списку</a>
+</div>
+
+<div class="article-body">
+  <div class="article-title">{{ article.title }}</div>
+  <div class="meta" style="margin-bottom:.5rem;">
+    <span>&#128100; <span class="badge">{{ article.author }}</span></span>
+    <span>&#128197; {{ article.published_at|date:"d.m.Y H:i" }}</span>
+  </div>
+  <a class="api-link" href="/api/articles/{{ article.pk }}/" target="_blank">
+    &#123;&#125; Переглянути JSON
+  </a>
+  <div class="article-text">{{ article.text }}</div>
+</div>
+{% endblock %}
