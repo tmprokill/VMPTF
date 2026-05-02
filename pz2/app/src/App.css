@@ -1,0 +1,11 @@
+.page-header {
+  margin-bottom: 40px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+}
+
+.page-sub {
+  color: var(--text);
+  font-size: 15px;
+  margin-top: 4px;
+}

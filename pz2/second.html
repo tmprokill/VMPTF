@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Second – JSON Parser</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #0f1117;
+      color: #e2e8f0;
+      font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 20px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      font-weight: 600;
+      color: #c084fc;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      color: #6b7280;
+      font-size: 14px;
+      margin-bottom: 32px;
+    }
+
+    .input-wrap {
+      width: 100%;
+      max-width: 720px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 140px;
+      background: #1a1d27;
+      border: 1px solid #2e303a;
+      border-radius: 10px;
+      color: #e2e8f0;
+      font-family: ui-monospace, Consolas, monospace;
+      font-size: 14px;
+      padding: 14px 16px;
+      resize: vertical;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    textarea:focus {
+      border-color: rgba(192,132,252,.6);
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      padding: 9px 22px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: opacity .2s;
+    }
+
+    button:hover { opacity: .85; }
+
+    #parseBtn {
+      background: #c084fc;
+      color: #0f1117;
+    }
+
+    #clearBtn {
+      background: #2e303a;
+      color: #9ca3af;
+    }
+
+    .error-msg {
+      color: #f87171;
+      font-size: 13px;
+      min-height: 18px;
+    }
+
+    #output {
+      width: 100%;
+      max-width: 720px;
+      margin-top: 28px;
+    }
+
+    /* Tree */
+    .tree { padding: 0; margin: 0; }
+
+    details {
+      margin: 2px 0;
+    }
+
+    summary {
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 8px;
+      border-radius: 6px;
+      user-select: none;
+      color: #f3f4f6;
+    }
+
+    summary:hover { background: rgba(255,255,255,.04); }
+
+    summary::before {
+      content: '▶';
+      font-size: 10px;
+      color: #6b7280;
+      transition: transform .15s;
+    }
+
+    details[open] > summary::before {
+      transform: rotate(90deg);
+    }
+
+    .tree-children {
+      padding-left: 22px;
+      border-left: 1px solid #2e303a;
+      margin-left: 10px;
+    }
+
+    .leaf {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      padding: 4px 8px;
+      font-family: ui-monospace, Consolas, monospace;
+      font-size: 13px;
+    }
+
+    .key   { color: #93c5fd; }
+    .type  { font-size: 11px; color: #6b7280; }
+
+    .val-string  { color: #86efac; }
+    .val-number  { color: #fbbf24; }
+    .val-boolean { color: #f472b6; }
+    .val-null    { color: #6b7280; font-style: italic; }
+
+    .badge {
+      display: inline-block;
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 4px;
+      margin-left: 4px;
+    }
+
+    .badge-obj   { background: rgba(147,197,253,.15); color: #93c5fd; }
+    .badge-arr   { background: rgba(251,191,36,.12);  color: #fbbf24; }
+  </style>
+</head>
+<body>
+  <h1>JSON Parser</h1>
+  <p class="subtitle">Введіть JSON — отримаєте дерево</p>
+
+  <div class="input-wrap">
+    <textarea id="jsonInput" placeholder='{"name":"Artem","age":20,"hobbies":["code","music"]}'></textarea>
+    <div class="btn-row">
+      <button id="parseBtn">Розпарсити</button>
+      <button id="clearBtn">Очистити</button>
+    </div>
+    <div class="error-msg" id="errorMsg"></div>
+  </div>
+
+  <div id="output"></div>
+
+  <script>
+    const input   = document.getElementById('jsonInput');
+    const output  = document.getElementById('output');
+    const errorEl = document.getElementById('errorMsg');
+
+    document.getElementById('parseBtn').addEventListener('click', () => {
+      errorEl.textContent = '';
+      output.innerHTML = '';
+
+      let parsed;
+      try {
+        parsed = JSON.parse(input.value.trim());
+      } catch (e) {
+        errorEl.textContent = 'Помилка парсингу: ' + e.message;
+        return;
+      }
+
+      const tree = buildTree(parsed, null);
+      output.appendChild(tree);
+    });
+
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      input.value = '';
+      output.innerHTML = '';
+      errorEl.textContent = '';
+    });
+
+    function typeOf(val) {
+      if (val === null) return 'null';
+      if (Array.isArray(val)) return 'array';
+      return typeof val;
+    }
+
+    function buildTree(value, keyName) {
+      const t = typeOf(value);
+
+      if (t === 'object' || t === 'array') {
+        const entries = t === 'array'
+          ? value.map((v, i) => [String(i), v])
+          : Object.entries(value);
+
+        const details = document.createElement('details');
+        details.open = true;
+
+        const summary = document.createElement('summary');
+        if (keyName !== null) {
+          const k = document.createElement('span');
+          k.className = 'key';
+          k.textContent = keyName + ':';
+          summary.appendChild(k);
+        }
+
+        const badge = document.createElement('span');
+        badge.className = 'badge ' + (t === 'array' ? 'badge-arr' : 'badge-obj');
+        badge.textContent = t === 'array'
+          ? `Array [${value.length}]`
+          : `Object {${entries.length}}`;
+        summary.appendChild(badge);
+        details.appendChild(summary);
+
+        const children = document.createElement('div');
+        children.className = 'tree-children tree';
+        entries.forEach(([k, v]) => children.appendChild(buildTree(v, k)));
+        details.appendChild(children);
+
+        return details;
+      }
+
+      // primitive leaf
+      const leaf = document.createElement('div');
+      leaf.className = 'leaf';
+
+      if (keyName !== null) {
+        const k = document.createElement('span');
+        k.className = 'key';
+        k.textContent = keyName + ':';
+        leaf.appendChild(k);
+      }
+
+      const v = document.createElement('span');
+      v.className = 'val-' + (t === 'null' ? 'null' : t);
+      v.textContent = t === 'string' ? `"${value}"` : String(value);
+      leaf.appendChild(v);
+
+      const typeSpan = document.createElement('span');
+      typeSpan.className = 'type';
+      typeSpan.textContent = t;
+      leaf.appendChild(typeSpan);
+
+      return leaf;
+    }
+  </script>
+</body>
+</html>

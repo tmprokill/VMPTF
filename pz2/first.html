@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>First – JSON fetch</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #0f1117;
+      color: #e2e8f0;
+      font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      background: #1a1d27;
+      border: 1px solid #2e303a;
+      border-radius: 12px;
+      padding: 40px 48px;
+      min-width: 320px;
+      box-shadow: 0 20px 40px rgba(0,0,0,.5);
+    }
+
+    h1 {
+      margin: 0 0 28px;
+      font-size: 26px;
+      font-weight: 600;
+      color: #c084fc;
+      letter-spacing: -0.5px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 20px;
+    }
+
+    .label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #6b7280;
+    }
+
+    .value {
+      font-size: 18px;
+      color: #f3f4f6;
+    }
+
+    .hobbies {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .tag {
+      background: rgba(192,132,252,.15);
+      border: 1px solid rgba(192,132,252,.35);
+      color: #c084fc;
+      border-radius: 6px;
+      padding: 4px 12px;
+      font-size: 14px;
+    }
+
+    .error {
+      color: #f87171;
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card" id="card">
+    <p>Завантаження…</p>
+  </div>
+
+  <script>
+    fetch('user.json')
+      .then(res => res.text())
+      .then(text => {
+        const data = JSON.parse(text);
+        const card = document.getElementById('card');
+        card.innerHTML = '';
+
+        const title = document.createElement('h1');
+        title.textContent = 'Профіль';
+        card.appendChild(title);
+
+        const fields = [
+          { label: 'Ім\'я',  value: data.name },
+          { label: 'Вік',    value: data.age + ' років' },
+        ];
+
+        fields.forEach(({ label, value }) => {
+          const field = document.createElement('div');
+          field.className = 'field';
+
+          const lbl = document.createElement('span');
+          lbl.className = 'label';
+          lbl.textContent = label;
+
+          const val = document.createElement('span');
+          val.className = 'value';
+          val.textContent = value;
+
+          field.appendChild(lbl);
+          field.appendChild(val);
+          card.appendChild(field);
+        });
+
+        const hobbyField = document.createElement('div');
+        hobbyField.className = 'field';
+
+        const hobbyLabel = document.createElement('span');
+        hobbyLabel.className = 'label';
+        hobbyLabel.textContent = 'Хобі';
+
+        const hobbies = document.createElement('div');
+        hobbies.className = 'hobbies';
+
+        data.hobbies.forEach(hobby => {
+          const tag = document.createElement('span');
+          tag.className = 'tag';
+          tag.textContent = hobby;
+          hobbies.appendChild(tag);
+        });
+
+        hobbyField.appendChild(hobbyLabel);
+        hobbyField.appendChild(hobbies);
+        card.appendChild(hobbyField);
+      })
+      .catch(err => {
+        document.getElementById('card').innerHTML =
+          `<p class="error">Помилка: ${err.message}</p>`;
+      });
+  </script>
+</body>
+</html>
