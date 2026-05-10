@@ -15,8 +15,7 @@ def is_palindrome(text: str) -> bool:
     clean_text = text.replace(' ', '')
     return clean_text == clean_text[::-1]
 
-# Level 4: 4.	Розробіть алгоритм сортування масиву чисел методом швидкого сортування (QuickSort) 
-# та виведіть відсортований масив.
+# Level 4: 4.	Розробіть алгоритм сортування масиву чисел методом швидкого сортування (QuickSort) та виведіть відсортований масив.
 def quick_sort_and_print(arr: list[int]):
     n = len(arr)
     quick_sort(arr, 0, n - 1)
